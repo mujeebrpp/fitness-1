@@ -38,7 +38,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: #fff; /* White background for the canvas */
+            /* Removed background-color: #fff; so video shows through if drawing fails */
         }
 
         /* Hide the raw video element as we draw onto the canvas */
@@ -188,8 +188,15 @@
             canvasCtx.save(); // Save canvas state before drawing
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height); // Clear previous frame
 
-            // Optional: Draw the video frame itself onto the canvas
-            // canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+            // *** THIS IS THE FIX: Draw the video frame itself onto the canvas ***
+            // Ensure results.image contains the video frame data
+            if (results.image) {
+                canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+            } else {
+                // Fallback if image isn't available in results (shouldn't normally happen with Camera util)
+                 canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+            }
+
 
             // Get the detected landmarks
             const landmarks = results.poseLandmarks;
